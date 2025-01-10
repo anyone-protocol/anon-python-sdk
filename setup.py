@@ -124,6 +124,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "requests",
+        "stem"
     ],
     cmdclass={
         "install": CustomInstallCommand,  # Use the custom install command

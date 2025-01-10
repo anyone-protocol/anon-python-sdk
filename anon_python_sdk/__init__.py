@@ -18,3 +18,4 @@ Quick Start:
 
 # Import key functions and classes for top-level access
 from .anon_runner import start_anon, stop_anon, create_default_anonrc
+from .circuits import get_anon_circuits
