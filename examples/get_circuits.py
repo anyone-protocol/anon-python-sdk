@@ -1,4 +1,12 @@
 from anon_python_sdk import ControlClient
+from anon_python_sdk import start_anon, stop_anon
+from time
+
+print("Starting Anon...")
+pid = start_anon()
+print(f"Anon started with PID: {pid}")
+
+time.sleep(5)  # Wait for Anon to start
 
 client = ControlClient()
 
@@ -14,3 +22,6 @@ try:
             print(f"    Fingerprint: {relay.fingerprint}, Nickname: {relay.nickname}")
 finally:
     client.close()
+
+    print("Stopping Anon...")
+    stop_anon(pid)

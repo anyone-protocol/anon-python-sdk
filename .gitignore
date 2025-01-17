@@ -5,3 +5,5 @@ anon_python_sdk.egg-info
 tests/__pycache__
 dist/
 anon_python_sdk/__pycache__
+man.txt
+anonrc

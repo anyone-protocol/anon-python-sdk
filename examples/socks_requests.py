@@ -1,6 +1,15 @@
 from anon_python_sdk.socks_client import SocksClient
+from anon_python_sdk import start_anon, stop_anon
+import time
+
 
 def main():
+    print("Starting Anon...")
+    pid = start_anon()
+    print(f"Anon started with PID: {pid}")
+
+    time.sleep(5)  # Wait for Anon to start
+
     client = SocksClient()
 
     try:
@@ -23,6 +32,10 @@ def main():
 
     except RuntimeError as e:
         print(f"Request error: {e}")
+
+    finally:
+        stop_anon(pid)
+        print("Anon stopped")
 
 
 if __name__ == "__main__":

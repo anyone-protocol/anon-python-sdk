@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Path to the binary directory and default anonrc file
 BINARY_DIR = Path.home() / ".anon-python-sdk" / "bin"
-DEFAULT_ANONRC = Path("/usr/local/etc/anon") / "anonrc"
+DEFAULT_ANONRC = Path("./anonrc")
 
 # Platform-specific binary names
 PLATFORM_MAP = {
