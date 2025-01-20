@@ -47,7 +47,7 @@ class CustomInstallCommand(install):
         arch_name = ARCH_MAP[arch]
 
         asset_name = f"anon-live-{platform_name}-{arch_name}.zip"
-        binary_dir = Path.home() / ".anon-python-sdk" / "bin"
+        binary_dir = Path.home() / ".anon_python_sdk" / "bin"
         binary_dir.mkdir(parents=True, exist_ok=True)
 
         # Fetch release data
@@ -86,8 +86,8 @@ class CustomInstallCommand(install):
 
 # Standard setup.py configuration
 setup(
-    name="anon-python-sdk",
-    version="0.0.6",
+    name="anon_python_sdk",
+    version="0.0.7",
     description="Python SDK for Anon",
     packages=find_packages(),
     package_data={"anon_python_sdk": ["bin/*"]},
