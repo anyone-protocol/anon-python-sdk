@@ -7,3 +7,5 @@ dist/
 anon_python_sdk/__pycache__
 man.txt
 anonrc
+.idea/
+

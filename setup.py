@@ -87,7 +87,7 @@ class CustomInstallCommand(install):
 # Standard setup.py configuration
 setup(
     name="anon_python_sdk",
-    version="0.0.7",
+    version="0.0.8",
     description="Python SDK for Anon",
     packages=find_packages(),
     package_data={"anon_python_sdk": ["bin/*"]},

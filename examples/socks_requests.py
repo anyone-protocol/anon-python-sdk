@@ -1,42 +1,40 @@
-from anon_python_sdk.socks_client import SocksClient
-from anon_python_sdk import start_anon, stop_anon
+from anon_python_sdk import SocksClient, AnonConfig, AnonRunner
 import time
 
 
-def main():
-    print("Starting Anon...")
-    pid = start_anon()
-    print(f"Anon started with PID: {pid}")
+# Create a configuration
+config = AnonConfig(
+    auto_terms_agreement=True
+)
 
-    time.sleep(5)  # Wait for Anon to start
+# Initialize and start the runner
+runner = AnonRunner(config)
+runner.start()
 
-    client = SocksClient()
+time.sleep(5)  # Wait for Anon to start
 
-    try:
-        # Example GET request
-        response = client.get("https://check.en.anyone.tech/api/ip")
-        print("GET Response:")
-        print(response.text)
+client = SocksClient()
 
-        # Example POST request
-        post_url = "https://httpbin.org/post"
-        post_data = {"key": "value"}
-        response = client.post(post_url, json=post_data)
-        print("POST Response:")
-        print(response.json())
+try:
+    # Example GET request
+    response = client.get("https://check.en.anyone.tech/api/ip")
+    print("GET Response:")
+    print(response.text)
 
-        # Example DELETE request
-        response = client.delete("https://httpbin.org/delete")
-        print("DELETE Response:")
-        print(response.json())
+    # Example POST request
+    post_url = "https://httpbin.org/post"
+    post_data = {"key": "value"}
+    response = client.post(post_url, json=post_data)
+    print("POST Response:")
+    print(response.json())
 
-    except RuntimeError as e:
-        print(f"Request error: {e}")
+    # Example DELETE request
+    response = client.delete("https://httpbin.org/delete")
+    print("DELETE Response:")
+    print(response.json())
 
-    finally:
-        stop_anon(pid)
-        print("Anon stopped")
+except RuntimeError as e:
+    print(f"Request error: {e}")
 
-
-if __name__ == "__main__":
-    main()
+finally:
+    runner.stop()

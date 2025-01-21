@@ -1,10 +1,15 @@
-from anon_python_sdk.control_client import ControlClient
-from anon_python_sdk import start_anon, stop_anon
+from anon_python_sdk import ControlClient, AnonRunner, AnonConfig
 import time
 
 print("Starting Anon...")
-pid = start_anon()
-print(f"Anon started with PID: {pid}")
+# Create a configuration
+config = AnonConfig(
+    auto_terms_agreement=True
+)
+
+# Initialize and start the runner
+runner = AnonRunner(config)
+runner.start()
 
 time.sleep(5)  # Wait for Anon to start
 
@@ -36,4 +41,4 @@ finally:
     print("ControlClient connection closed.")
 
     print("Stopping Anon...")
-    stop_anon(pid)
+    runner.stop()
