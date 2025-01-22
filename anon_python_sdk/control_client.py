@@ -1,6 +1,6 @@
 from stem.control import Controller
 from .exceptions import AnonError
-from .models import Circuit, Relay
+from .models import Circuit, Relay, RelayInfo
 from typing import List, Optional
 
 
@@ -126,3 +126,63 @@ class ControlClient:
             self.controller.close_circuit(circuit_id)
         except Exception as e:
             raise AnonError(f"Error closing circuit {circuit_id}: {e}")
+
+    def get_relay_info(self, fingerprint: str) -> RelayInfo:
+        """
+        Get relay information by fingerprint.
+
+        Args:
+            fingerprint (str): The relay fingerprint.
+
+        Returns:
+            dict: Information about the relay.
+        """
+        if not self.controller:
+            raise AnonError("Control client is not connected. Call 'connect()' first.")
+
+        try:
+            # Send the GETINFO command to retrieve relay info
+            response = self.controller.get_info(f"ns/id/${fingerprint}")
+        except Exception as e:
+            raise AnonError(f"Failed to fetch relay info for {fingerprint}: {e}")
+
+        # Parse the response
+        lines = response.splitlines()
+        relay_info = {
+            "fingerprint": fingerprint,
+            "nickname": "",
+            "ip": "",
+            "or_port": 0,
+            "flags": [],
+            "bandwidth": 0,
+        }
+
+        for line in lines:
+            line = line.strip()
+
+            # Extract flags from the line starting with 's '
+            if line.startswith("s "):
+                relay_info["flags"] = line[2:].strip().split(" ")
+
+            # Extract IP, ORPort, and nickname from the line starting with 'r '
+            elif line.startswith("r "):
+                parts = line.split(" ")
+                if len(parts) >= 8:
+                    relay_info["nickname"] = parts[1]
+                    relay_info["ip"] = parts[6]
+                    relay_info["or_port"] = int(parts[7])
+
+            # Extract bandwidth from the line starting with 'w '
+            elif line.startswith("w "):
+                bandwidth_str = line.split("=")[1]
+                relay_info["bandwidth"] = int(bandwidth_str)
+
+        return RelayInfo(
+            fingerprint=fingerprint,
+            nickname=relay_info["nickname"],
+            ip=relay_info["ip"],
+            or_port=relay_info["or_port"],
+            flags=relay_info["flags"],
+            bandwidth=relay_info["bandwidth"],
+        )
+    
