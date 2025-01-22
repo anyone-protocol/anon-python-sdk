@@ -135,7 +135,7 @@ class ControlClient:
             fingerprint (str): The relay fingerprint.
 
         Returns:
-            dict: Information about the relay.
+            RelayInfo: Relay information as a structured object.
         """
         if not self.controller:
             raise AnonError("Control client is not connected. Call 'connect()' first.")
@@ -148,41 +148,30 @@ class ControlClient:
 
         # Parse the response
         lines = response.splitlines()
-        relay_info = {
-            "fingerprint": fingerprint,
-            "nickname": "",
-            "ip": "",
-            "or_port": 0,
-            "flags": [],
-            "bandwidth": 0,
-        }
+        nickname, ip, or_port, flags, bandwidth = "", "", 0, [], 0
 
         for line in lines:
             line = line.strip()
 
-            # Extract flags from the line starting with 's '
-            if line.startswith("s "):
-                relay_info["flags"] = line[2:].strip().split(" ")
+            if line.startswith("s "):  # Flags
+                flags = line[2:].strip().split(" ")
 
-            # Extract IP, ORPort, and nickname from the line starting with 'r '
-            elif line.startswith("r "):
+            elif line.startswith("r "):  # IP, ORPort, Nickname
                 parts = line.split(" ")
                 if len(parts) >= 8:
-                    relay_info["nickname"] = parts[1]
-                    relay_info["ip"] = parts[6]
-                    relay_info["or_port"] = int(parts[7])
+                    nickname = parts[1]
+                    ip = parts[6]
+                    or_port = int(parts[7])
 
-            # Extract bandwidth from the line starting with 'w '
-            elif line.startswith("w "):
-                bandwidth_str = line.split("=")[1]
-                relay_info["bandwidth"] = int(bandwidth_str)
+            elif line.startswith("w "):  # Bandwidth
+                bandwidth = int(line.split("=")[1])
 
         return RelayInfo(
             fingerprint=fingerprint,
-            nickname=relay_info["nickname"],
-            ip=relay_info["ip"],
-            or_port=relay_info["or_port"],
-            flags=relay_info["flags"],
-            bandwidth=relay_info["bandwidth"],
+            nickname=nickname,
+            ip=ip,
+            or_port=or_port,
+            flags=flags,
+            bandwidth=bandwidth,
         )
     

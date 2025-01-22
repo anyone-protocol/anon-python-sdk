@@ -25,7 +25,15 @@ try:
     # Get relay info from the first relay in the first circuit
     relay_fingerprint = circuits[0].path[0].fingerprint
     relay_info = client.get_relay_info(relay_fingerprint)
-    print(f"Relay [0] info: {relay_info}")
+
+    # Fancy print for relay info
+    print(f"\n[Relay Info]\n")
+    print(f"Nickname: {relay_info.nickname}")
+    print(f"Fingerprint: {relay_info.fingerprint}")
+    print(f"IP: {relay_info.ip}")
+    print(f"OR Port: {relay_info.or_port}")
+    print(f"Flags: {', '.join(relay_info.flags)}")
+    print(f"Bandwidth: {relay_info.bandwidth} bytes/sec")
 
 finally:
     client.close()
