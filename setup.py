@@ -96,7 +96,8 @@ setup(
     include_package_data=True,
     install_requires=[
         "requests[socks]",
-        "stem"
+        "stem",
+        "colorama",
     ],
     cmdclass={
         "install": CustomInstallCommand,  # Use the custom install command
