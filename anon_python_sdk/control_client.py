@@ -1,8 +1,9 @@
-from stem.control import Controller
+from stem.control import Controller, EventType
 from .exceptions import AnonError
 from .models import Circuit, Relay, RelayInfo
 from typing import List, Optional
-from colorama import Fore, Style, init
+from colorama import Fore, init
+import time
 
 # Initialize colorama for colored output
 init(autoreset=True)
@@ -106,7 +107,7 @@ class ControlClient:
             print(f"{Fore.RED}Error fetching circuit {circuit_id}: {e}")
             raise AnonError(f"Error fetching circuit {circuit_id}: {e}")
     
-    def create_circuit(self, relays: List[str] = None) -> int:
+    def create_circuit(self, relays: List[str] = None, await_build: bool = True) -> int:
         """
         Create a new circuit through the specified relays.
         Args:
@@ -118,7 +119,7 @@ class ControlClient:
             raise AnonError(f"{Fore.RED}Not connected to the control port. Please call 'connect()' first.")
 
         try:
-            circuit_id = self.controller.extend_circuit(0, relays)
+            circuit_id = self.controller.extend_circuit(0, relays, await_build=await_build)
             print(f"{Fore.GREEN}Successfully created circuit {circuit_id}.")
             return circuit_id
         except Exception as e:
@@ -191,3 +192,29 @@ class ControlClient:
             flags=flags,
             bandwidth=bandwidth,
         )
+
+    def scan(self, circuit_id: int, request, socks):
+        """
+        Fetch check.torproject.org through the given path of relays, providing back
+        the time it took.
+        """
+        
+        def attach_stream(stream):
+            if stream.status == 'NEW':
+                self.controller.attach_stream(stream.id, circuit_id)
+
+        self.controller.add_event_listener(attach_stream, EventType.STREAM)
+
+        try:
+            self.controller.set_conf('__LeaveStreamsUnattached', '1')  # manual stream attachment
+
+            start_time = time.time()
+            response = request(socks)
+            end_time = time.time()
+            print(end_time - start_time)
+
+            return response
+        finally:
+            self.controller.remove_event_listener(attach_stream)
+            self.controller.reset_conf('__LeaveStreamsUnattached')
+

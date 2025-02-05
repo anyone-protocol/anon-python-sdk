@@ -1,6 +1,6 @@
 import requests
 from requests.exceptions import RequestException
-from colorama import Fore, Style, init
+from colorama import Fore, init
 
 # Initialize colorama for colored output
 init(autoreset=True)

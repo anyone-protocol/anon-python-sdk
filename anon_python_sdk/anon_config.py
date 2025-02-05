@@ -110,6 +110,7 @@ def create_anon_config_file(options: AnonConfig) -> str:
         f"SOCKSPort {options.socks_port}",
         f"ORPort {options.or_port}",
         f"ControlPort {options.control_port}",
+        f"AllowSingleHopCircuits 1",
     ]
 
     # Handle exit nodes if specified
