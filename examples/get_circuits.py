@@ -1,4 +1,4 @@
-from anon_python_sdk import ControlClient, AnonRunner, AnonConfig
+from anon_python_sdk import Controller, AnonRunner, AnonConfig
 
 
 # Create a configuration
@@ -10,18 +10,18 @@ config = AnonConfig(
 runner = AnonRunner(config)
 runner.start()
 
-client = ControlClient()
+client = Controller.from_port()
 
 try:
-    client.connect()
+    client.authenticate()
     circuits = client.get_circuits()
     for circuit in circuits:
-        print(f"Circuit ID: {circuit.id}, Status: {circuit.status}")
-        print(f"  Purpose: {circuit.purpose}")
-        print(f"  Time Created: {circuit.time_created}")
+        print(f"Circuit ID: {circuit.id}")
+        print(f"  Time Created: {circuit.created}")
         print("  Path:")
         for relay in circuit.path:
-            print(f"    Fingerprint: {relay.fingerprint}, Nickname: {relay.nickname}")
+            print(
+                f"    Fingerprint: {relay.fingerprint}, Nickname: {relay.nickname}")
 finally:
     client.close()
     runner.stop()
