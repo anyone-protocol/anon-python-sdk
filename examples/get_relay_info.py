@@ -1,4 +1,4 @@
-from anon_python_sdk import ControlClient, AnonRunner, AnonConfig, RelayInfo
+from anon_python_sdk import Controller, AnonRunner, AnonConfig
 
 
 # Create a configuration
@@ -12,21 +12,21 @@ config = AnonConfig(
 runner = AnonRunner(config)
 runner.start()
 
-client = ControlClient()
+client = Controller.from_port()
 
 try:
-    client.connect()
+    client.authenticate()
     circuits = client.get_circuits()
 
     # Get relay info from the first relay in the first circuit
     relay_fingerprint = circuits[0].path[0].fingerprint
-    relay_info = client.get_relay_info(relay_fingerprint)
+    relay_info = client.get_network_status(relay_fingerprint)
 
     # Fancy print for relay info
     print(f"\n[Relay Info]\n")
     print(f"Nickname: {relay_info.nickname}")
     print(f"Fingerprint: {relay_info.fingerprint}")
-    print(f"IP: {relay_info.ip}")
+    print(f"Address: {relay_info.address}")
     print(f"OR Port: {relay_info.or_port}")
     print(f"Flags: {', '.join(relay_info.flags)}")
     print(f"Bandwidth: {relay_info.bandwidth} bytes/sec")
