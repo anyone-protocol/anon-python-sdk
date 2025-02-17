@@ -9,17 +9,14 @@ from stem.response.events import CircuitEvent
 from .models import Circuit, Hop, Relay
 
 
-class Controller():
+class Control():
 
     @staticmethod
-    def from_port(address: str = '127.0.0.1', port: Union[int, str] = 'default') -> Controller:
-        return Controller(stem.control.Controller.from_port(address, port))
+    def from_port(address: str = '127.0.0.1', port: Union[int, str] = 'default') -> Control:
+        return Control(stem.control.Controller.from_port(address, port))
 
     def __init__(self, controller: stem.control.Controller = None):
         self._controller = controller
-
-    def getClient(self):
-        return self._controller
 
     def authenticate(self, password=None, chroot_path=None, protocolinfo_response=None):
         self._controller.authenticate(
@@ -53,6 +50,9 @@ class Controller():
         router_status: RouterStatusEntryV3 = self._controller.get_network_status(
             relay)
         return self._to_relay(router_status)
+
+    def get_country(self, address: Optional[str] = None) -> str:
+        return self._controller.get_info(f'ip-to-country/{address}')
 
     def _to_circuits(self, circuit_events: List[CircuitEvent]) -> List[Circuit]:
         return [self._to_circuit(circuit_event) for circuit_event in circuit_events]

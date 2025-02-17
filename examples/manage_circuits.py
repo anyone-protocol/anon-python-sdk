@@ -1,17 +1,16 @@
-from anon_python_sdk import Controller, AnonRunner, AnonConfig
+from anon_python_sdk import Control, Process, Config
 
 print("Starting Anon...")
 # Create a configuration
-config = AnonConfig(
+config = Config(
     auto_terms_agreement=True,
     display_log=False
 )
 
 # Initialize and start the runner
-runner = AnonRunner(config)
-runner.start()
+anon = Process.launch_anon(anonrc_path=config.to_file())
 
-client = Controller.from_port()
+client = Control.from_port()
 
 try:
     print("Connecting to Control Port...")
@@ -38,4 +37,4 @@ finally:
     print("Controller connection closed.")
 
     print("Stopping Anon...")
-    runner.stop()
+    anon.stop()

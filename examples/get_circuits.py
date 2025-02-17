@@ -1,16 +1,14 @@
-from anon_python_sdk import Controller, AnonRunner, AnonConfig
+from anon_python_sdk import Control, Config, Process
 
 
 # Create a configuration
-config = AnonConfig(
+config = Config(
     auto_terms_agreement=True
 )
 
-# Initialize and start the runner
-runner = AnonRunner(config)
-runner.start()
-
-client = Controller.from_port()
+# Initialize and start
+anon = Process.launch_anon(anonrc_path=config.to_file())
+client = Control.from_port()
 
 try:
     client.authenticate()
@@ -24,4 +22,4 @@ try:
                 f"    Fingerprint: {relay.fingerprint}, Nickname: {relay.nickname}")
 finally:
     client.close()
-    runner.stop()
+    anon.stop()
