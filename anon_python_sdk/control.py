@@ -76,8 +76,8 @@ class Control():
         self._controller.attach_stream(stream_id, circuit_id, exiting_hop)
 
     # type: ignore
-    def add_event_listener(self, listener: Callable[[Event], Union[None, Awaitable[None]]], *events: EventType) -> None:
-        self._controller.add_event_listener(listener, *events)
+    def add_event_listener(self, listener: Callable[[Event], Union[None, Awaitable[None]]]) -> None:
+        self._controller.add_event_listener(listener, EventType.STREAM)
 
     def remove_event_listener(self, listener: Callable[[Event], Union[None, Awaitable[None]]]) -> None:
         self._controller.remove_event_listener(listener)
@@ -143,10 +143,19 @@ class Control():
     def enable_stream_attachment(self):
         self.reset_conf('__LeaveStreamsUnattached')
 
-    def get_exit_relays(self) -> List[Relay]:
-        relays = self.get_network_statuses()
-        return [relay for relay in relays if 'Exit' in relay.flags]
+    def get_relays(self) -> List[Relay]:
+        return self.get_network_statuses()
 
-    def get_exit_relays_by_country(self, _country: str) -> List[Relay]:
-        exit_relays = self.get_exit_relays()
-        return [relay for relay in exit_relays if self.get_country(relay.address) == _country]
+    def get_relays_by_flags(self, flags: Union[str, Sequence[str]]) -> List[Relay]:
+        relays = self.get_relays()
+        return self.filter_relays_by_flags(relays, flags)
+
+    def filter_relays_by_flags(self, relays: List[Relay], *flags: str) -> List[Relay]:
+        return [relay for relay in relays if all(flag in relay.flags for flag in flags)]
+
+    def get_relays_by_countries(self, countries: Union[str, Sequence[str]]) -> List[Relay]:
+        relays = self.get_relays()
+        return self.filter_relays_by_countries(relays, countries)
+
+    def filter_relays_by_countries(self, relays: List[Relay], *countries: str) -> List[Relay]:
+        return [relay for relay in relays if all(country in self.get_country(relay.address) for country in countries)]

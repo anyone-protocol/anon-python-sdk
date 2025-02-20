@@ -1,4 +1,4 @@
-from anon_python_sdk import Control, Process, Config
+from anon_python_sdk import Control, Process, Config, Socks
 
 print("Starting Anon...")
 # Create a configuration
@@ -11,30 +11,51 @@ config = Config(
 anon = Process.launch_anon(anonrc_path=config.to_file())
 
 control = Control.from_port()
+socks = Socks()
 
 try:
     print("Connecting to Control Port...")
     control.authenticate()
 
-    exits = control.get_exit_relays_by_country("nl")
+    relays = control.get_relays()
+    print("Total Relays:", len(relays))
+    nl_relays = control.filter_relays_by_countries(relays, "de")
+    exit_relays = control.filter_relays_by_flags(nl_relays, "Exit")
+    exit = exit_relays[0].fingerprint
+    print("Exit Relay:", exit)
+    guard_relays = control.filter_relays_by_flags(nl_relays, "Guard")
+    guard = guard_relays[0].fingerprint
+    print("Guard Relay:", guard)
 
-    print("Exit Relays:", exits)
+    print("Creating a new circuit through specified relays")
+    path = [guard, exit]
+    circuit_id = control.new_circuit(path=path, await_build=True)
+    print(f"New circuit created with ID: {circuit_id}")
 
-    # print("Creating a new circuit through specified relays...")
-    # # relays = [
-    # #     "894D4088C63D3FA4446E505E672C47A8247AC891",
-    # #     "6DB2B0D574CE216648CA388D309EE7CF5DF0B423",
-    # #     "A17C391AAE45689358EC226C43D1290EBED7437A"
-    # #     ]# Replace with real relay fingerprints
-    # m_circuit_id = control.new_circuit(await_build=True)
-    # print(f"New circuit created with ID: {m_circuit_id}")
+    circuit = control.get_circuit(circuit_id)
+    print(f"Created circuit. ID: {circuit.id}, Path: {circuit.path}")
 
-    # m_circuit = control.get_circuit(m_circuit_id)
-    # print(f"Manual Circuit ID: {m_circuit.id}, Path: {m_circuit.path}")
+    control.disable_stream_attachment()
+    print("Stream attachment disabled.")
 
-    # print("Closing the manual circuit...")
-    # control.close_circuit(m_circuit_id)
-    # print(f"Manual circuit {m_circuit_id} closed successfully.")
+    def attach_stream(stream):
+        if stream.status == 'NEW':
+            control.attach_stream(stream.id, circuit_id)
+
+    control.add_event_listener(attach_stream)
+    print("Stream listener added.")
+
+    print("Executing a new get request...")
+
+    resp = socks.get("http://ip-api.com/json")
+    print(resp.text)
+
+    control.remove_event_listener(attach_stream)
+    print("Stream listener removed.")
+
+    print("Closing the manual circuit...")
+    control.close_circuit(circuit_id)
+    print(f"Manual circuit {circuit_id} closed successfully.")
 
 finally:
     control.close()
