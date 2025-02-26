@@ -18,6 +18,9 @@ class CircuitStatus(Enum):
     FAILED = 'FAILED'
     CLOSED = 'CLOSED'
 
+    def __str__(self):
+        return self.name
+
 
 @dataclass
 class Circuit:
