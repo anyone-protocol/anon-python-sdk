@@ -41,13 +41,23 @@ class CircuitPurpose(Enum):
         return self.name
 
 
-@dataclass
+class Rule(Enum):
+    WEIGHT_FOR_GUARD = 'WEIGHT_FOR_GUARD'
+    WEIGHT_FOR_MID = 'WEIGHT_FOR_MID'
+
+
+class NodeSelectionFlag(Enum):
+    CRN_NEED_GUARD = 'CRN_NEED_GUARD'
+    CRN_NEED_DESC = 'CRN_NEED_DESC'
+    CRN_PREF_ADDR = 'CRN_PREF_ADDR'
+    CRN_DIRECT_CONN = 'CRN_DIRECT_CONN'
+
+
 class CircuitBuildFlag(Enum):
     ONEHOP_TUNNEL = 'ONEHOP_TUNNEL'
     IS_INTERNAL = 'IS_INTERNAL'
     NEED_CAPACITY = 'NEED_CAPACITY'
     NEED_UPTIME = 'NEED_UPTIME'
-    IS_INTERNAL = 'IS_INTERNAL'
     IS_IPV6_SELFTEST = 'IS_IPV6_SELFTEST'
     NEED_CONFLUX = 'NEED_CONFLUX'
 
@@ -61,6 +71,7 @@ class CircuitState:
     is_ipv6_selftest: bool
     need_conflux: bool
     desired_path_len: int
+
 
 @dataclass
 class Circuit:
