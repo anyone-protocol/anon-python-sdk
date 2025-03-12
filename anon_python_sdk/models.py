@@ -42,8 +42,30 @@ class CircuitPurpose(Enum):
 
 
 @dataclass
+class CircuitBuildFlag(Enum):
+    ONEHOP_TUNNEL = 'ONEHOP_TUNNEL'
+    IS_INTERNAL = 'IS_INTERNAL'
+    NEED_CAPACITY = 'NEED_CAPACITY'
+    NEED_UPTIME = 'NEED_UPTIME'
+    IS_INTERNAL = 'IS_INTERNAL'
+    IS_IPV6_SELFTEST = 'IS_IPV6_SELFTEST'
+    NEED_CONFLUX = 'NEED_CONFLUX'
+
+
+@dataclass
+class CircuitState:
+    need_capacity: bool
+    need_uptime: bool
+    onehop_tunnel: bool
+    is_internal: bool
+    is_ipv6_selftest: bool
+    need_conflux: bool
+    desired_path_len: int
+
+@dataclass
 class Circuit:
     id: str
+    state: CircuitState
     path: List[Hop]
     created: datetime
     status: CircuitStatus
