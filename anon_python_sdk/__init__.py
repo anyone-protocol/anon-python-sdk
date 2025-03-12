@@ -13,5 +13,5 @@ from .models import *
 from .process import Process
 from .starter import Anon
 
-__all__ = [Config, Control, Process, Socks, CircuitStatus, StreamStatus,
+__all__ = [Config, Control, Process, Socks, CircuitStatus, StreamStatus, CircuitBuildFlag,
            StreamPurpose, AnonError, Circuit, Hop, Relay, Anon, VPNRouting, VPNConfig]
